@@ -8,6 +8,7 @@
 import SwiftUI
 import RealityKit
 import ARKit
+import FocusEntity
 
 struct ContentView : View {
     //turn on placement button and off
@@ -64,17 +65,18 @@ struct ARViewContainer: UIViewRepresentable {
         config.planeDetection = [.horizontal, .vertical]
         //this sets light setting automatically
         config.environmentTexturing = .automatic
-        
         //if the LIDAR is available, turn it on
-//        if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh){
-//            config.sceneReconstruction = .mesh
-//        }
+        if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh){
+            config.sceneReconstruction = .mesh
+        }
+        //using FocusEntity package
+        let focusEntity = FocusEntity(on: arView, focus: .plane)
+        arView.scene.anchors.append(focusEntity)
         
         arView.session.run(config)
-        
         return arView
-        
     }
+    
     //render modelEntity   model = modelConfirmedPlacment = selectedModel = models[index] = [Model][index]
     func updateUIView(_ uiView: ARView, context: Context) {
         if let model = self.modelConfirmedForPlacement{
@@ -98,7 +100,9 @@ struct ARViewContainer: UIViewRepresentable {
         }
     }
     
+    
 }
+
 
 struct ModelPickerView : View {
     //using @Binding allows you to use variable from other functions
